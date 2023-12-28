@@ -1,0 +1,38 @@
+---
+branches:
+  # the default release branch
+  - name: release
+  # maintenance release branches formatted like `release-5.x` or `release-5.0.x`
+  - name: "release-+([0-9])?(.{+([0-9]),x}).x"
+    channel: ""
+    range: '${name.replace(/^release-/g, "")}'
+  # the pre-release branch
+  - name: main
+    prerelease: alpha # this should change to 'rc' after the v5.0.0 release
+    channel: ""
+
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - releaseRules:
+        - { type: fix, release: patch }
+        # this setting should change to 'minor' once the v5.0.0 release has happened
+        - { type: feat, release: major }
+  - "@semantic-release/github"
+  - "@semantic-release/release-notes-generator"
+  - - "@semantic-release/changelog"
+    - changelogTitle: "# Changelog"
+  - - "@semantic-release/git"
+    - assets: [CHANGELOG.md]
+
+preset: conventionalcommits
+presetConfig:
+  types:
+    - { type: feat, section: Features }
+    - { type: fix, section: Bug Fixes }
+    - { type: ci, section: Other Changes }
+    - { type: perf, section: Other Changes }
+    - { type: refactor, section: Other Changes }
+    - { type: docs, section: Other Changes }
+    - { type: chore, hidden: true }
+    - { type: style, hidden: true }
+    - { type: test, hidden: true }
